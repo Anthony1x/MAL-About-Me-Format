@@ -1,21 +1,26 @@
 <?php
-// Read source file
-$contents = file_get_contents("VisualNovelList.md");
+try {
+    $sourceFile = "VisualNovelList.md";
+    $destinationFile = "VisualNovelList-FORMATTED.md";
 
-if (!$contents) throw new Exception("FILE NOT FOUND!");
+    if (!file_exists($sourceFile)) {
+        throw new Exception("Source file does not exist!");
+    }
 
-// Remove all line breaks and tabs
-$contents = str_replace("\n", "", $contents);
-$contents = str_replace("\r", "", $contents);
-$contents = str_replace("    ", "", $contents);
+    // Read source file
+    $contents = file_get_contents($sourceFile);
 
-// Insert date when '#{DATE}' string has been found.
-$contents = str_replace("#{DATE}", date('F dS Y'), $contents);
+    // Remove all line breaks and tabs, and insert date and line breaks
+    $search = ["\n", "\r", "    ", "#{DATE}", "[br]"];
+    $replace = ["", "", "", date('F dS Y'), "\n"];
+    $contents = str_replace($search, $replace, $contents);
 
-// Insert line breaks when [br] is found
-$contents = str_replace("[br]", "\n", $contents);
+    // Write formatted file
+    if (file_put_contents($destinationFile, $contents) === false) {
+        throw new Exception("Failed to write to destination file!");
+    }
 
-// Write formatted file
-file_put_contents("VisualNovelList-FORMATTED.md", $contents);
-
-echo "Everything worked fine!";
+    echo "Everything worked fine!";
+} catch (Exception $e) {
+    echo 'Error: ' . $e->getMessage();
+}
