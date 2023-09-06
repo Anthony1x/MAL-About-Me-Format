@@ -1,4 +1,5 @@
 <?php
+
 try {
     $sourceFile = "VisualNovelList.md";
     $destinationFile = "VisualNovelList-FORMATTED.md";
@@ -11,8 +12,8 @@ try {
     $contents = file_get_contents($sourceFile);
 
     // Remove all line breaks and tabs, and insert date and line breaks
-    $search = ["\n", "\r", "    ", "#{DATE}", "[br]"];
-    $replace = ["", "", "", date('F dS Y'), "\n"];
+    $search =   ["\n",  "\r",   "    ", "#{DATE}",      "[br]"];
+    $replace =  ["",    "",     "",     date('F dS Y'), "\n"];
     $contents = str_replace($search, $replace, $contents);
 
     // Write formatted file
