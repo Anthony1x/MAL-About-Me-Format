@@ -14,27 +14,27 @@ std::string OutputFileBuilder::Build()
 {
 	std::string output = this->BuildHeader();
 
-	output.append(this->BuildFinishedVNs());
+	output += this->BuildFinishedVNs();
 
-	output.append(this->Break());
+	output += this->Break();
 
-	output.append(this->StartTable());
+	output += this->StartTable();
 
-	output.append(this->BuildCurrentlyReadingVNs());
-	output.append(this->BuildOnHoldVNs());
-	output.append(this->BuildPlanToReadVNs());
-	output.append(this->BuildPlanToReadButCannotVNs());
+	output += this->BuildCurrentlyReadingVNs();
+	output += this->BuildOnHoldVNs();
+	output += this->BuildPlanToReadVNs();
+	output += this->BuildPlanToReadButCannotVNs();
 
-	output.append(this->EndTable());
+	output += this->EndTable();
 
 	return output;
 }
 
 std::string OutputFileBuilder::BuildHeader() {
 	std::string output = "Since MyAnimeList does not support visual novels I will score them here";
-	output.append(this->Break());
-	output.append(this->Date());
-	output.append(this->Break());
+	output += this->Break();
+	output += this->Date();
+	output += this->Break();
 
 	return output;
 }
@@ -42,41 +42,41 @@ std::string OutputFileBuilder::BuildHeader() {
 std::string OutputFileBuilder::BuildFinishedVNs() {
 	std::string output = this->StartTable();
 
-	output.append(this->StartTableRow());
+	output += this->StartTableRow();
 
-	output.append(this->TableHeader("Visual Novel"));
-	output.append(this->TableHeader("Rating"));
-	output.append(this->TableHeader("Play time"));
-	output.append(this->TableHeader("Comments"));
+	output += this->TableHeader("Visual Novel");
+	output += this->TableHeader("Rating");
+	output += this->TableHeader("Play time");
+	output += this->TableHeader("Comments");
 
-	output.append(this->EndTableRow());
+	output += this->EndTableRow();
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
 		if (visualNovel.status == VisualNovel::Status::Finished) {
 
-			output.append(this->StartTableRow());
+			output += this->StartTableRow();
 
-			output.append(this->TableData(visualNovel.name));
-			output.append(this->TableData(visualNovel.getRating()));
-			output.append(this->TableData(visualNovel.getPlaytime()));
-			output.append(this->TableData(visualNovel.comment));
+			output += this->TableData(visualNovel.name);
+			output += this->TableData(visualNovel.getRating());
+			output += this->TableData(visualNovel.getPlaytime());
+			output += this->TableData(visualNovel.comment);
 
-			output.append(this->EndTableRow());
+			output += this->EndTableRow();
 		}
 	}
 
-	output.append(this->StartTableRow());
+	output += this->StartTableRow();
 
-	output.append(this->TableHeader("GAMES: " + std::to_string(this->GetFinished())));
-	output.append(this->TableHeader(std::format("{:.2f}", this->MeanRating()).append("/10")));
-	output.append(this->TableHeader(std::to_string(this->TotalHoursPlayed()).append(" hours")));
-	output.append(this->TableHeader("None"));
+	output += this->TableHeader("GAMES: " + std::to_string(this->GetFinished()));
+	output += this->TableHeader(std::format("{:.2f}", this->MeanRating()).append("/10"));
+	output += this->TableHeader(std::to_string(this->TotalHoursPlayed()).append(" hours"));
+	output += this->TableHeader("None");
 
-	output.append(this->EndTableRow());
+	output += this->EndTableRow();
 
 
-	output.append(this->EndTable());
+	output += this->EndTable();
 
 	return output;
 }
@@ -110,21 +110,21 @@ int OutputFileBuilder::TotalHoursPlayed()
 std::string OutputFileBuilder::BuildCurrentlyReadingVNs() {
 
 	std::string output = this->StartTableRow();
-	output.append(this->TableHeader("Currently reading"));
-	output.append(this->EndTableRow());
+	output += this->TableHeader("Currently reading");
+	output += this->EndTableRow();
 
-	output.append(this->StartTableRow());
+	output += this->StartTableRow();
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
 		if (visualNovel.status == VisualNovel::Status::Currently_Reading) {
-			output.append(this->StartTableRow());
-			output.append(this->TableData(visualNovel.name));
-			output.append(this->EndTableRow());
+			output += this->StartTableRow();
+			output += this->TableData(visualNovel.name);
+			output += this->EndTableRow();
 		}
 	}
 
-	output.append(this->EndTableRow());
+	output += this->EndTableRow();
 
 	return output;
 }
@@ -132,42 +132,42 @@ std::string OutputFileBuilder::BuildCurrentlyReadingVNs() {
 std::string OutputFileBuilder::BuildOnHoldVNs() {
 
 	std::string output = this->StartTableRow();
-	output.append(this->TableHeader("On hold"));
-	output.append(this->EndTableRow());
+	output += this->TableHeader("On hold");
+	output += this->EndTableRow();
 
-	output.append(this->StartTableRow());
+	output += this->StartTableRow();
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
 		if (visualNovel.status == VisualNovel::Status::On_Hold) {
-			output.append(this->StartTableRow());
-			output.append(this->TableData(visualNovel.name));
-			output.append(this->EndTableRow());
+			output += this->StartTableRow();
+			output += this->TableData(visualNovel.name);
+			output += this->EndTableRow();
 		}
 	}
 
-	output.append(this->EndTableRow());
+	output += this->EndTableRow();
 
 	return output;
 }
 
 std::string OutputFileBuilder::BuildPlanToReadVNs() {
 	std::string output = this->StartTableRow();
-	output.append(this->TableHeader("Plan to read"));
-	output.append(this->EndTableRow());
+	output += this->TableHeader("Plan to read");
+	output += this->EndTableRow();
 
-	output.append(this->StartTableRow());
+	output += this->StartTableRow();
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
 		if (visualNovel.status == VisualNovel::Status::Plan_To_Read) {
-			output.append(this->StartTableRow());
-			output.append(this->TableData(visualNovel.name));
-			output.append(this->EndTableRow());
+			output += this->StartTableRow();
+			output += this->TableData(visualNovel.name);
+			output += this->EndTableRow();
 		}
 	}
 
-	output.append(this->EndTableRow());
+	output += this->EndTableRow();
 
 	return output;
 }
@@ -175,27 +175,26 @@ std::string OutputFileBuilder::BuildPlanToReadVNs() {
 std::string OutputFileBuilder::BuildPlanToReadButCannotVNs() {
 
 	std::string output = this->StartTableRow();
-	output.append(this->TableHeader("Plan to read, but unreleased / unlocalized"));
-	output.append(this->TableHeader("Comment"));
-	output.append(this->EndTableRow());
+	output += this->TableHeader("Plan to read, but unreleased / unlocalized");
+	output += this->TableHeader("Comment");
+	output += this->EndTableRow();
 
-	output.append(this->StartTableRow());
+	output += this->StartTableRow();
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
 		if (visualNovel.status == VisualNovel::Status::Plan_To_Read_But_Cannot) {
-			output.append(this->StartTableRow());
-			output.append(this->TableData(visualNovel.name));
-			output.append(this->TableData(visualNovel.comment));
-			output.append(this->EndTableRow());
+			output += this->StartTableRow();
+			output += this->TableData(visualNovel.name);
+			output += this->TableData(visualNovel.comment);
+			output += this->EndTableRow();
 		}
 	}
 
-	output.append(this->EndTableRow());
+	output += this->EndTableRow();
 
 	return output;
 }
-
 
 std::string OutputFileBuilder::Break()
 {
@@ -228,7 +227,6 @@ std::string OutputFileBuilder::StartTable()
 {
 	return "[table]";
 }
-
 
 std::string OutputFileBuilder::StartTableRow()
 {
