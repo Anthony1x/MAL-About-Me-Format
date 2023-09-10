@@ -2,6 +2,17 @@
 #include "OutputFileBuilder.h"
 #include <fstream>
 
+void WriteToFile(std::string file, std::string &content)
+{
+	std::ofstream outputfile;
+
+	outputfile.open(file);
+	outputfile << content;
+	outputfile.close();
+
+	std::cout << "Wrote file without issues.\n";
+}
+
 int main()
 {
 	std::vector<VisualNovel> visualNovels = {
@@ -51,13 +62,7 @@ int main()
 
 	std::string output = builder.Build();
 
-	std::ofstream outputfile;
-
-	outputfile.open("list.md");
-	outputfile << output;
-	outputfile.close();
-
-	std::cout << "Wrote file without issues.\n";
+	WriteToFile("list.md", output);
 
 	return 0;
 }
