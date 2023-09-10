@@ -1,5 +1,6 @@
 ﻿#include "VisualNovel.h"
 #include "OutputFileBuilder.h"
+#include <fstream>
 
 int main()
 {
@@ -48,5 +49,15 @@ int main()
 
 	OutputFileBuilder builder(visualNovels);
 
-	std::cout << builder.Build() << "\n";
+	std::string output = builder.Build();
+
+	std::ofstream outputfile;
+
+	outputfile.open("list.md");
+	outputfile << output;
+	outputfile.close();
+
+	std::cout << "Wrote file without issues.\n";
+
+	return 0;
 }
