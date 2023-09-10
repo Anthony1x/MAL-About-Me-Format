@@ -1,6 +1,9 @@
 #include "OutputFileBuilder.h"
 #include <numeric>
 #include <algorithm>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 #include <format>
 
 OutputFileBuilder::OutputFileBuilder(std::vector<VisualNovel>& visualNovels) : visualNovels(visualNovels)
@@ -201,7 +204,24 @@ std::string OutputFileBuilder::Break()
 
 std::string OutputFileBuilder::Date()
 {
-	return "Last updated: Not added yet. Remember to add this.";
+	std::time_t t = std::time(nullptr);
+	std::tm now;
+
+#ifdef _WIN32
+	// For MSVC
+	localtime_s(&now, &t);
+#else
+	// For POSIX
+	localtime_r(&t, &now);
+#endif
+
+	std::stringstream ss;
+	ss << "Last updated (DD/MM/YYYY): ";
+	ss << std::setfill('0') << std::setw(2) << now.tm_mday << "/";
+	ss << std::setfill('0') << std::setw(2) << now.tm_mon + 1 << "/";
+	ss << now.tm_year + 1900;
+
+	return ss.str();
 }
 
 std::string OutputFileBuilder::StartTable()
