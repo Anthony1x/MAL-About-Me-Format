@@ -60,8 +60,8 @@ std::string OutputFileBuilder::BuildFinishedVNs()
 			output += this->StartTableRow();
 
 			output += this->TableData(visualNovel.name);
-			output += this->TableData(visualNovel.getRating());
-			output += this->TableData(visualNovel.getPlaytime());
+			output += this->TableData(visualNovel.GetRating());
+			output += this->TableData(visualNovel.GetPlaytime());
 			output += this->TableData(visualNovel.comment);
 
 			output += this->EndTableRow();
@@ -80,35 +80,6 @@ std::string OutputFileBuilder::BuildFinishedVNs()
 	output += this->EndTable();
 
 	return output;
-}
-
-size_t OutputFileBuilder::GetFinished()
-{
-	return std::count_if(visualNovels.begin(), visualNovels.end(),
-		[](const VisualNovel& vn)
-		{
-			return vn.status == VisualNovel::Status::Finished;
-		});
-}
-
-float OutputFileBuilder::MeanRating()
-{
-	float totalRating = std::accumulate(visualNovels.begin(), visualNovels.end(), 0.0,
-		[](float sum, const VisualNovel& vn)
-		{
-			return vn.status == VisualNovel::Status::Finished ? sum + vn.rating : sum;
-		});
-
-	return totalRating / this->GetFinished();
-}
-
-int OutputFileBuilder::TotalHoursPlayed()
-{
-	return std::accumulate(visualNovels.begin(), visualNovels.end(), 0,
-		[](int sum, const VisualNovel& vn)
-		{
-			return vn.status == VisualNovel::Status::Finished ? sum + vn.playtime : sum;
-		});
 }
 
 std::string OutputFileBuilder::BuildCurrentlyReadingVNs()
@@ -183,7 +154,6 @@ std::string OutputFileBuilder::BuildPlanToReadVNs()
 
 std::string OutputFileBuilder::BuildPlanToReadButCannotVNs()
 {
-
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("Plan to read, but unreleased / unlocalized");
 	output += this->TableHeader("Comment");
@@ -207,9 +177,33 @@ std::string OutputFileBuilder::BuildPlanToReadButCannotVNs()
 	return output;
 }
 
-std::string OutputFileBuilder::Break()
+size_t OutputFileBuilder::GetFinished()
 {
-	return "\n";
+	return std::count_if(visualNovels.begin(), visualNovels.end(),
+		[](const VisualNovel& vn)
+		{
+			return vn.status == VisualNovel::Status::Finished;
+		});
+}
+
+float OutputFileBuilder::MeanRating()
+{
+	float totalRating = std::accumulate(visualNovels.begin(), visualNovels.end(), 0.0,
+		[](float sum, const VisualNovel& vn)
+		{
+			return vn.status == VisualNovel::Status::Finished ? sum + vn.rating : sum;
+		});
+
+	return totalRating / this->GetFinished();
+}
+
+int OutputFileBuilder::TotalHoursPlayed()
+{
+	return std::accumulate(visualNovels.begin(), visualNovels.end(), 0,
+		[](int sum, const VisualNovel& vn)
+		{
+			return vn.status == VisualNovel::Status::Finished ? sum + vn.playtime : sum;
+		});
 }
 
 std::string OutputFileBuilder::Date()
@@ -232,6 +226,11 @@ std::string OutputFileBuilder::Date()
 	ss << now.tm_year + 1900;
 
 	return ss.str();
+}
+
+std::string OutputFileBuilder::Break()
+{
+	return "\n";
 }
 
 std::string OutputFileBuilder::StartTable()

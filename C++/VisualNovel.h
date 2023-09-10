@@ -23,6 +23,6 @@ struct VisualNovel
 	VisualNovel(std::string name, Status status);
 	VisualNovel(std::string name, std::string comment, Status status);
 
-	std::string getRating();
-	std::string getPlaytime();
+	std::string GetRating();
+	std::string GetPlaytime();
 };

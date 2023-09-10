@@ -20,12 +20,12 @@ VisualNovel::VisualNovel(std::string name, std::string comment, Status status) :
 {
 }
 
-std::string VisualNovel::getRating()
+std::string VisualNovel::GetRating()
 {
 	return std::to_string(this->rating).append("/10");
 }
 
-std::string VisualNovel::getPlaytime()
+std::string VisualNovel::GetPlaytime()
 {
 	return std::to_string(playtime).append(" hours");
 }
