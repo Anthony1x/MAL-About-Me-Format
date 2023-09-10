@@ -68,9 +68,9 @@ std::string OutputFileBuilder::BuildFinishedVNs() {
 
 	output.append(this->StartTableRow());
 
-	output.append(this->TableHeader("GAMES: " + std::to_string(this->getFinished())));
-	output.append(this->TableHeader(std::format("{:.2f}", this->meanRating()).append("/10")));
-	output.append(this->TableHeader(std::to_string(this->totalHoursPlayed()).append(" hours")));
+	output.append(this->TableHeader("GAMES: " + std::to_string(this->GetFinished())));
+	output.append(this->TableHeader(std::format("{:.2f}", this->MeanRating()).append("/10")));
+	output.append(this->TableHeader(std::to_string(this->TotalHoursPlayed()).append(" hours")));
 	output.append(this->TableHeader("None"));
 
 	output.append(this->EndTableRow());
@@ -81,7 +81,7 @@ std::string OutputFileBuilder::BuildFinishedVNs() {
 	return output;
 }
 
-size_t OutputFileBuilder::getFinished()
+size_t OutputFileBuilder::GetFinished()
 {
 	return std::count_if(visualNovels.begin(), visualNovels.end(),
 		[](const VisualNovel& vn) {
@@ -89,17 +89,17 @@ size_t OutputFileBuilder::getFinished()
 		});
 }
 
-float OutputFileBuilder::meanRating()
+float OutputFileBuilder::MeanRating()
 {
 	float totalRating = std::accumulate(visualNovels.begin(), visualNovels.end(), 0.0,
 		[](float sum, const VisualNovel& vn) {
 			return vn.status == VisualNovel::Status::Finished ? sum + vn.rating : sum;
 		});
 
-	return totalRating / this->getFinished();
+	return totalRating / this->GetFinished();
 }
 
-int OutputFileBuilder::totalHoursPlayed()
+int OutputFileBuilder::TotalHoursPlayed()
 {
 	return std::accumulate(visualNovels.begin(), visualNovels.end(), 0,
 		[](int sum, const VisualNovel& vn) {
