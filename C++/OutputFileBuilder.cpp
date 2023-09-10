@@ -30,7 +30,8 @@ std::string OutputFileBuilder::Build()
 	return output;
 }
 
-std::string OutputFileBuilder::BuildHeader() {
+std::string OutputFileBuilder::BuildHeader()
+{
 	std::string output = "Since MyAnimeList does not support visual novels I will score them here";
 	output += this->Break();
 	output += this->Date();
@@ -39,7 +40,8 @@ std::string OutputFileBuilder::BuildHeader() {
 	return output;
 }
 
-std::string OutputFileBuilder::BuildFinishedVNs() {
+std::string OutputFileBuilder::BuildFinishedVNs()
+{
 	std::string output = this->StartTable();
 
 	output += this->StartTableRow();
@@ -53,8 +55,8 @@ std::string OutputFileBuilder::BuildFinishedVNs() {
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
-		if (visualNovel.status == VisualNovel::Status::Finished) {
-
+		if (visualNovel.status == VisualNovel::Status::Finished)
+		{
 			output += this->StartTableRow();
 
 			output += this->TableData(visualNovel.name);
@@ -75,7 +77,6 @@ std::string OutputFileBuilder::BuildFinishedVNs() {
 
 	output += this->EndTableRow();
 
-
 	output += this->EndTable();
 
 	return output;
@@ -84,7 +85,8 @@ std::string OutputFileBuilder::BuildFinishedVNs() {
 size_t OutputFileBuilder::GetFinished()
 {
 	return std::count_if(visualNovels.begin(), visualNovels.end(),
-		[](const VisualNovel& vn) {
+		[](const VisualNovel& vn)
+		{
 			return vn.status == VisualNovel::Status::Finished;
 		});
 }
@@ -92,7 +94,8 @@ size_t OutputFileBuilder::GetFinished()
 float OutputFileBuilder::MeanRating()
 {
 	float totalRating = std::accumulate(visualNovels.begin(), visualNovels.end(), 0.0,
-		[](float sum, const VisualNovel& vn) {
+		[](float sum, const VisualNovel& vn)
+		{
 			return vn.status == VisualNovel::Status::Finished ? sum + vn.rating : sum;
 		});
 
@@ -102,13 +105,14 @@ float OutputFileBuilder::MeanRating()
 int OutputFileBuilder::TotalHoursPlayed()
 {
 	return std::accumulate(visualNovels.begin(), visualNovels.end(), 0,
-		[](int sum, const VisualNovel& vn) {
+		[](int sum, const VisualNovel& vn)
+		{
 			return vn.status == VisualNovel::Status::Finished ? sum + vn.playtime : sum;
 		});
 }
 
-std::string OutputFileBuilder::BuildCurrentlyReadingVNs() {
-
+std::string OutputFileBuilder::BuildCurrentlyReadingVNs()
+{
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("Currently reading");
 	output += this->EndTableRow();
@@ -117,7 +121,8 @@ std::string OutputFileBuilder::BuildCurrentlyReadingVNs() {
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
-		if (visualNovel.status == VisualNovel::Status::Currently_Reading) {
+		if (visualNovel.status == VisualNovel::Status::Currently_Reading)
+		{
 			output += this->StartTableRow();
 			output += this->TableData(visualNovel.name);
 			output += this->EndTableRow();
@@ -129,7 +134,8 @@ std::string OutputFileBuilder::BuildCurrentlyReadingVNs() {
 	return output;
 }
 
-std::string OutputFileBuilder::BuildOnHoldVNs() {
+std::string OutputFileBuilder::BuildOnHoldVNs()
+{
 
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("On hold");
@@ -139,7 +145,8 @@ std::string OutputFileBuilder::BuildOnHoldVNs() {
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
-		if (visualNovel.status == VisualNovel::Status::On_Hold) {
+		if (visualNovel.status == VisualNovel::Status::On_Hold)
+		{
 			output += this->StartTableRow();
 			output += this->TableData(visualNovel.name);
 			output += this->EndTableRow();
@@ -151,7 +158,8 @@ std::string OutputFileBuilder::BuildOnHoldVNs() {
 	return output;
 }
 
-std::string OutputFileBuilder::BuildPlanToReadVNs() {
+std::string OutputFileBuilder::BuildPlanToReadVNs()
+{
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("Plan to read");
 	output += this->EndTableRow();
@@ -160,7 +168,8 @@ std::string OutputFileBuilder::BuildPlanToReadVNs() {
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
-		if (visualNovel.status == VisualNovel::Status::Plan_To_Read) {
+		if (visualNovel.status == VisualNovel::Status::Plan_To_Read)
+		{
 			output += this->StartTableRow();
 			output += this->TableData(visualNovel.name);
 			output += this->EndTableRow();
@@ -172,7 +181,8 @@ std::string OutputFileBuilder::BuildPlanToReadVNs() {
 	return output;
 }
 
-std::string OutputFileBuilder::BuildPlanToReadButCannotVNs() {
+std::string OutputFileBuilder::BuildPlanToReadButCannotVNs()
+{
 
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("Plan to read, but unreleased / unlocalized");
@@ -183,7 +193,8 @@ std::string OutputFileBuilder::BuildPlanToReadButCannotVNs() {
 
 	for (VisualNovel& visualNovel : visualNovels)
 	{
-		if (visualNovel.status == VisualNovel::Status::Plan_To_Read_But_Cannot) {
+		if (visualNovel.status == VisualNovel::Status::Plan_To_Read_But_Cannot)
+		{
 			output += this->StartTableRow();
 			output += this->TableData(visualNovel.name);
 			output += this->TableData(visualNovel.comment);
