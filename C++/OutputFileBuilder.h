@@ -33,7 +33,7 @@ private:
 	std::string BuildPlanToReadButCannotVNs();
 	std::string BuildFinishedVNs();
 
-	size_t getFinished();
-	float meanRating();
-	int totalHoursPlayed();
+	size_t GetFinished();
+	float MeanRating();
+	int TotalHoursPlayed();
 };
