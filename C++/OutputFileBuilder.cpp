@@ -6,6 +6,14 @@
 #include <iomanip>
 #include <format>
 
+#ifdef _WIN32
+// For MSVC
+#define LOCALTIME(now, t) localtime_s(now, t);
+#else
+// For POSIX
+#define LOCALTIME(now, t) localtime_r(t, now);
+#endif
+
 OutputFileBuilder::OutputFileBuilder(std::vector<VisualNovel>& visualNovels) : visualNovels(visualNovels)
 {
 }
