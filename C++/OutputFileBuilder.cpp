@@ -10,7 +10,7 @@ OutputFileBuilder::OutputFileBuilder(std::vector<VisualNovel>& visualNovels) : v
 {
 }
 
-std::string OutputFileBuilder::Build()
+const std::string OutputFileBuilder::Build() const
 {
 	std::string output = this->BuildHeader();
 
@@ -30,7 +30,7 @@ std::string OutputFileBuilder::Build()
 	return output;
 }
 
-std::string OutputFileBuilder::BuildHeader()
+const std::string OutputFileBuilder::BuildHeader() const
 {
 	std::string output = "Since MyAnimeList does not support visual novels I will score them here";
 	output += this->Break();
@@ -40,7 +40,7 @@ std::string OutputFileBuilder::BuildHeader()
 	return output;
 }
 
-std::string OutputFileBuilder::BuildFinishedVNs()
+const std::string OutputFileBuilder::BuildFinishedVNs() const
 {
 	std::string output = this->StartTable();
 
@@ -82,7 +82,7 @@ std::string OutputFileBuilder::BuildFinishedVNs()
 	return output;
 }
 
-std::string OutputFileBuilder::BuildCurrentlyReadingVNs()
+const std::string OutputFileBuilder::BuildCurrentlyReadingVNs() const
 {
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("Currently reading");
@@ -105,7 +105,7 @@ std::string OutputFileBuilder::BuildCurrentlyReadingVNs()
 	return output;
 }
 
-std::string OutputFileBuilder::BuildOnHoldVNs()
+const std::string OutputFileBuilder::BuildOnHoldVNs() const
 {
 
 	std::string output = this->StartTableRow();
@@ -129,7 +129,7 @@ std::string OutputFileBuilder::BuildOnHoldVNs()
 	return output;
 }
 
-std::string OutputFileBuilder::BuildPlanToReadVNs()
+const std::string OutputFileBuilder::BuildPlanToReadVNs() const
 {
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("Plan to read");
@@ -152,7 +152,7 @@ std::string OutputFileBuilder::BuildPlanToReadVNs()
 	return output;
 }
 
-std::string OutputFileBuilder::BuildPlanToReadButCannotVNs()
+const std::string OutputFileBuilder::BuildPlanToReadButCannotVNs() const
 {
 	std::string output = this->StartTableRow();
 	output += this->TableHeader("Plan to read, but unreleased / unlocalized");
@@ -177,7 +177,7 @@ std::string OutputFileBuilder::BuildPlanToReadButCannotVNs()
 	return output;
 }
 
-size_t OutputFileBuilder::GetFinished()
+const size_t OutputFileBuilder::GetFinished() const
 {
 	return std::count_if(visualNovels.begin(), visualNovels.end(),
 		[](const VisualNovel& vn)
@@ -186,7 +186,7 @@ size_t OutputFileBuilder::GetFinished()
 		});
 }
 
-float OutputFileBuilder::MeanRating()
+const float OutputFileBuilder::MeanRating() const
 {
 	float totalRating = std::accumulate(visualNovels.begin(), visualNovels.end(), 0.0,
 		[](float sum, const VisualNovel& vn)
@@ -197,7 +197,7 @@ float OutputFileBuilder::MeanRating()
 	return totalRating / this->GetFinished();
 }
 
-int OutputFileBuilder::TotalHoursPlayed()
+const int OutputFileBuilder::TotalHoursPlayed() const
 {
 	return std::accumulate(visualNovels.begin(), visualNovels.end(), 0,
 		[](int sum, const VisualNovel& vn)
@@ -206,18 +206,12 @@ int OutputFileBuilder::TotalHoursPlayed()
 		});
 }
 
-std::string OutputFileBuilder::Date()
+const std::string OutputFileBuilder::Date() const
 {
 	std::time_t t = std::time(nullptr);
 	std::tm now;
 
-#ifdef _WIN32
-	// For MSVC
-	localtime_s(&now, &t);
-#else
-	// For POSIX
-	localtime_r(&t, &now);
-#endif
+	LOCALTIME(&now, &t);
 
 	std::stringstream ss;
 	ss << "Last updated (DD/MM/YYYY): ";
@@ -228,37 +222,37 @@ std::string OutputFileBuilder::Date()
 	return ss.str();
 }
 
-std::string OutputFileBuilder::Break()
+const std::string OutputFileBuilder::Break() const
 {
 	return "\n";
 }
 
-std::string OutputFileBuilder::StartTable()
+const std::string OutputFileBuilder::StartTable() const
 {
 	return "[table]";
 }
 
-std::string OutputFileBuilder::StartTableRow()
+const std::string OutputFileBuilder::StartTableRow() const
 {
 	return "[tr]";
 }
 
-std::string OutputFileBuilder::EndTableRow()
+const std::string OutputFileBuilder::EndTableRow() const
 {
 	return "[/tr]";
 }
 
-std::string OutputFileBuilder::TableHeader(std::string value)
+const std::string OutputFileBuilder::TableHeader(std::string value) const
 {
 	return "[th]" + value + "[/th]";
 }
 
-std::string OutputFileBuilder::TableData(std::string value)
+const std::string OutputFileBuilder::TableData(std::string value) const
 {
 	return "[td]" + value + "[/td]";
 }
 
-std::string OutputFileBuilder::EndTable()
+const std::string OutputFileBuilder::EndTable() const
 {
 	return "[/table]";
 }

@@ -7,28 +7,28 @@ class OutputFileBuilder
 {
 public:
 	OutputFileBuilder(std::vector<VisualNovel>& visualNovels);
-	std::string Build();
+	const std::string Build() const;
 
 private:
 	std::vector<VisualNovel>& visualNovels;
-	
-	std::string BuildHeader();
-	std::string BuildCurrentlyReadingVNs();
-	std::string BuildOnHoldVNs();
-	std::string BuildPlanToReadVNs();
-	std::string BuildPlanToReadButCannotVNs();
-	std::string BuildFinishedVNs();
 
-	std::string Break();
-	std::string Date();
-	std::string StartTable();
-	std::string EndTable();
-	std::string StartTableRow();
-	std::string EndTableRow();
-	std::string TableHeader(std::string value);
-	std::string TableData(std::string value);
+	const std::string BuildHeader() const;
+	const std::string BuildCurrentlyReadingVNs() const;
+	const std::string BuildOnHoldVNs() const;
+	const std::string BuildPlanToReadVNs() const;
+	const std::string BuildPlanToReadButCannotVNs() const;
+	const std::string BuildFinishedVNs() const;
 
-	size_t GetFinished();
-	float MeanRating();
-	int TotalHoursPlayed();
+	const std::string Break() const;
+	const std::string Date() const;
+	const std::string StartTable() const;
+	const std::string EndTable() const;
+	const std::string StartTableRow() const;
+	const std::string EndTableRow() const;
+	const std::string TableHeader(std::string value) const;
+	const std::string TableData(std::string value) const;
+
+	const size_t GetFinished() const;
+	const float MeanRating() const;
+	const int TotalHoursPlayed() const;
 };
