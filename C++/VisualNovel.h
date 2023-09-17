@@ -1,16 +1,18 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <wx/string.h>
 
 struct VisualNovel
 {
 	enum Status
 	{
-		Finished = 0,
-		Currently_Reading = 1,
-		On_Hold = 2,
-		Plan_To_Read = 3,
-		Plan_To_Read_But_Cannot = 4
+		Finished,
+		Currently_Reading,
+		On_Hold,
+		Dropped,
+		Plan_To_Read,
+		Plan_To_Read_But_Cannot
 	};
 
 	std::string name;
@@ -19,10 +21,13 @@ struct VisualNovel
 	std::string comment;
 	Status status;
 
+	VisualNovel();
 	VisualNovel(std::string name, uint8_t rating, uint8_t playtime, std::string comment);
 	VisualNovel(std::string name, Status status);
-	VisualNovel(std::string name, std::string comment, Status status);
+	VisualNovel(std::string name, std::string comment);
 
-	std::string GetRating();
-	std::string GetPlaytime();
+	const wxString GetName() const;
+	const std::string GetRating() const;
+	const std::string GetPlaytime() const;
+	const wxString GetComment() const;
 };

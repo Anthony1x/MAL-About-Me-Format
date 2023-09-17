@@ -1,9 +1,9 @@
 ﻿#include "MainFrame.h"
 #include <string>
 #include <format>
-#include <wx/editlbox.h>
-#include <wx/wfstream.h>
-#include "VisualNovel.h"
+#include <wx/txtstrm.h>
+#include <wx/tokenzr.h>
+#include <memory>
 
 MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title)
 {
@@ -16,30 +16,54 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title)
 	menuBar->Append(fileMenu, _("&File"));
 	menuBar->Append(editMenu, _("&Edit"));
 
-	fileMenu->Append(wxID_OPEN);
-	fileMenu->Append(wxID_SAVE);
-	fileMenu->Append(wxID_SAVEAS);
-	// TOOD: Bind exit to close the application.
-	fileMenu->Append(wxID_EXIT);
+	// ---------- MENU BINDINGS ----------
 
-	editMenu->Append(wxID_ADD);
-	editMenu->Append(wxID_REMOVE);
+	this->Bind(wxEVT_MENU, &MainFrame::OpenFileDialog, this, fileMenu->Append(wxID_OPEN)->GetId());
+	// TODO: Don't open dialog. Make member that contains file path.
+	this->Bind(wxEVT_MENU, &MainFrame::SaveFileDialog, this, fileMenu->Append(wxID_SAVE)->GetId());
+	this->Bind(wxEVT_MENU, &MainFrame::SaveFileDialog, this, fileMenu->Append(wxID_SAVEAS)->GetId());
+	this->Bind(wxEVT_MENU, [this](wxCommandEvent& evt) { Close(true); }, fileMenu->Append(wxID_EXIT)->GetId());
 
-	this->Bind(wxEVT_MENU, &MainFrame::OpenFileDialog, this, wxID_OPEN);
-	this->Bind(wxEVT_MENU, &MainFrame::SaveFileDialog, this, wxID_SAVEAS);
+	this->Bind(wxEVT_MENU, [this](wxCommandEvent& evt) {
+			uint32_t lastItem = listCtrlFinished->GetItemCount();
 
-	listCtrl = new wxDataViewListCtrl(panel, wxID_ANY);
+			wxVector<wxVariant> defaultValues;
+			defaultValues.push_back("Title");
+			defaultValues.push_back("Rating");
+			defaultValues.push_back("Hours played");
+			defaultValues.push_back("Comment");
 
-	listCtrl->AppendTextColumn("Visual Novel", wxDATAVIEW_CELL_EDITABLE);
-	listCtrl->AppendTextColumn("Rating", wxDATAVIEW_CELL_EDITABLE);
-	listCtrl->AppendTextColumn("Play time", wxDATAVIEW_CELL_EDITABLE);
-	listCtrl->AppendTextColumn("Comment", wxDATAVIEW_CELL_EDITABLE);
+			this->listCtrlFinished->AppendItem(defaultValues);
+
+			// Get wxDataViewItem for the last row
+			wxDataViewItem item = this->listCtrlFinished->RowToItem(lastItem);
+
+			// Set the current item to the first cell of the last row
+			this->listCtrlFinished->SetCurrentItem(item);
+			this->listCtrlFinished->EditItem(item, this->listCtrlFinished->GetColumn(0));
+		},
+		editMenu->Append(wxID_ADD)->GetId());
+
+	// Delete selected item
+	this->Bind(wxEVT_MENU, [this](wxCommandEvent& evt) {
+			uint32_t selectedItem = listCtrlFinished->GetSelectedRow();
+
+			listCtrlFinished->DeleteItem(selectedItem);
+		}, editMenu->Append(wxID_REMOVE)->GetId());
+
+	// ---------- NOTEBOOK ----------
+
+	wxNotebook* noteBook = new wxNotebook(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBK_TOP);
+
+	noteBook->AddPage(CreateFinishedVisualNovelsPanel(noteBook), "Finished", true);
+	noteBook->AddPage(CreateOnHoldVisualNovelsPanel(noteBook), "On Hold", false);
+	noteBook->AddPage(CreateDroppedVisualNovelsPanel(noteBook), "Dropped", false);
+	noteBook->AddPage(CreatePlanToReadVisualNovelsPanel(noteBook), "Plan to read", false);
+	noteBook->AddPage(CreateCannotReadVisualNovelsPanel(noteBook), "Plan to read, but cannot", false);
 
 	auto sizer = new wxBoxSizer(wxVERTICAL);
-	sizer->Add(listCtrl, 1, wxALL|wxEXPAND, 0);
+	sizer->Add(noteBook, 1, wxEXPAND | wxALL, 10);
 	panel->SetSizerAndFit(sizer);
-
-	FakePopulate();
 
 	// --------- END ---------
 
@@ -51,7 +75,7 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title)
 
 void MainFrame::OpenFileDialog(wxCommandEvent& evt)
 {
-	wxFileDialog openFileDialog(this, _("Open a fucking file"), wxEmptyString, wxEmptyString, "Visual Novel Data (*.vnd)|*.vnd", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	wxFileDialog openFileDialog(this, _("Open file"), wxEmptyString, wxEmptyString, "Visual Novel Data (*.vnd)|*.vnd", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (openFileDialog.ShowModal() == wxID_CANCEL) return;
 
@@ -63,12 +87,85 @@ void MainFrame::OpenFileDialog(wxCommandEvent& evt)
 		return;
 	}
 
-	// TODO: Create function to read a stream and convert it to VN list.
+	wxTextInputStream text_stream(input_stream);
+	std::string line;
+
+	visualNovels.clear();
+
+	VisualNovel::Status status = VisualNovel::Finished;
+
+	while (!input_stream.Eof())
+	{
+		for (int i = VisualNovel::Finished; i != VisualNovel::Plan_To_Read_But_Cannot; i++)
+		{
+			line = text_stream.ReadLine();
+
+			// Line is empty, this means current Visual::Status has been populated.
+			if (line.empty())
+			{
+				switch (i)
+				{
+				case VisualNovel::Finished:
+					Populate(listCtrlFinished);
+					break;
+				case VisualNovel::On_Hold:
+					Populate(listCtrlOnHold);
+					break;
+				case VisualNovel::Dropped:
+					Populate(listCtrlDropped);
+					break;
+				case VisualNovel::Plan_To_Read:
+					Populate(listCtrlPlanToRead);
+					break;
+				case VisualNovel::Plan_To_Read_But_Cannot:
+					Populate(listCtrlPlanToReadButCannot);
+					break;
+				}
+			}
+
+			wxArrayString components = wxStringTokenize(line, "\t");
+
+			std::vector<std::string> values(components.begin(), components.end());
+
+			/*
+			 * FUNNY: I swear this is a feature, not a bug.
+			 * VisualNovel objects solely accept `uint32_t`s for construction of hours played and scoring.
+			 * Unfortunately, what save into the file is an entire string with non-number characters.
+			 * We don't pass the value "34" as a string, we pass "34 hours".
+			 * Similarly, we don't pass "7", we pass "7/10" for the rating.
+			 * Fortunately, C++ (or maybe rather MSVC?), being quirky as it is,
+			 * recognizes that the input has non-number characters and simply DISCARDS them.
+			 * So, without having to do anything on our end, "34 hours" is converted to just 34, as an int.
+			 * Take that, sensible developers!
+			 * ...will have to look into how other compilers handle this.
+			 */
+
+			VisualNovel visualNovel;
+
+			switch (i)
+			{
+			case VisualNovel::Finished:
+				visualNovel = VisualNovel(values[0], std::stoi(values[1]), std::stoi(values[2]), values[3]);
+				break;
+			case VisualNovel::On_Hold:
+			case VisualNovel::Dropped:
+			case VisualNovel::Plan_To_Read:
+				visualNovel = VisualNovel(values[0], static_cast<VisualNovel::Status>(i));
+				break;
+			case VisualNovel::Plan_To_Read_But_Cannot:
+				visualNovel = VisualNovel(values[0], values[3]);
+				break;
+			}
+
+			this->visualNovels.push_back(visualNovel);
+		}
+	}
+
 }
 
 void MainFrame::SaveFileDialog(wxCommandEvent& evt)
 {
-	wxFileDialog saveFileDialog(this, _("Save a fucking file"), wxEmptyString, wxEmptyString, "Visual Novel Data (*.vnd)|*.vnd", wxFD_SAVE);
+	wxFileDialog saveFileDialog(this, _("Save file"), wxEmptyString, wxEmptyString, "Visual Novel Data (*.vnd)|*.vnd", wxFD_SAVE);
 
 	if (saveFileDialog.ShowModal() == wxID_CANCEL) return;
 
@@ -80,6 +177,15 @@ void MainFrame::SaveFileDialog(wxCommandEvent& evt)
 		return;
 	}
 
+	VNWriteToFile(listCtrlFinished,				output_stream);
+	VNWriteToFile(listCtrlOnHold,				output_stream);
+	VNWriteToFile(listCtrlDropped,				output_stream);
+	VNWriteToFile(listCtrlPlanToRead,			output_stream);
+	VNWriteToFile(listCtrlPlanToReadButCannot,	output_stream);
+}
+
+void MainFrame::VNWriteToFile(wxDataViewListCtrl* listCtrl, wxFileOutputStream& output_stream)
+{
 	int numRows = listCtrl->GetItemCount();
 	int numCols = listCtrl->GetColumnCount();
 
@@ -94,12 +200,9 @@ void MainFrame::SaveFileDialog(wxCommandEvent& evt)
 
 			// Add a tab after each cell, except the last cell in the row
 			if (col < numCols - 1)
-			{
 				rowData += "\t";
-			}
 		}
 
-		// Add a newline character after each row
 		rowData += "\n";
 
 		// Convert rowData to a wxCharBuffer so it can be written to the file
@@ -110,31 +213,94 @@ void MainFrame::SaveFileDialog(wxCommandEvent& evt)
 	}
 }
 
-void MainFrame::FakePopulate()
+wxPanel* MainFrame::CreateFinishedVisualNovelsPanel(wxNotebook* noteBook)
 {
-	std::vector<VisualNovel> visualNovels = {
-		VisualNovel("Steins;Gate",                              8,	34,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("Steins;Gate 0",                            7,	32,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("Chaos;Head",                               6,	28,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("Robotics;Notes ELITE",                     8,	42,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("Chaos;Child",                              9,	54,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("Fate/Stay Night (Realta Nua)",             8,	78,	"PATCH USED: Ultimate Edition Patch"),
-		VisualNovel("Fate/Hollow Ataraxia",                     7,	32,	"PATCH USED: Voice Patch"),
-		VisualNovel("Wonderful Everyday Down the Rabbit-Hole",  10, 50, "None"),
-		VisualNovel("Phoenix Wright: Ace Attorney Trilogy",     8,	61,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("eden*",                                    6,	9,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("Chaos;Head Noah",                          8,	47,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("AI: The Somnium Files",                    6,	24,	"PATCH USED: Committee of Zero Improvement Patch"),
-		VisualNovel("DeadΩAegis: Gaiden",						5,	2,	"Prequel to DeadΩAegis"),
-	};
+	wxPanel* pagePanel = new wxPanel(noteBook, wxID_ANY);
+	listCtrlFinished = new wxDataViewListCtrl(pagePanel, wxID_ANY);
 
-	for (VisualNovel& visualNovel : visualNovels)
+	listCtrlFinished->AppendTextColumn("Visual Novel", wxDATAVIEW_CELL_EDITABLE);
+	listCtrlFinished->AppendTextColumn("Rating", wxDATAVIEW_CELL_EDITABLE);
+	listCtrlFinished->AppendTextColumn("Play time", wxDATAVIEW_CELL_EDITABLE);
+	listCtrlFinished->AppendTextColumn("Comment", wxDATAVIEW_CELL_EDITABLE);
+
+	wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
+	pageSizer->Add(listCtrlFinished, 1, wxALL | wxEXPAND, 0);
+	pagePanel->SetSizerAndFit(pageSizer);
+
+	return pagePanel;
+}
+
+wxPanel* MainFrame::CreateOnHoldVisualNovelsPanel(wxNotebook* noteBook)
+{
+	wxPanel* pagePanel = new wxPanel(noteBook, wxID_ANY);
+	listCtrlOnHold = new wxDataViewListCtrl(pagePanel, wxID_ANY);
+
+	listCtrlOnHold->AppendTextColumn("Visual Novel", wxDATAVIEW_CELL_EDITABLE);
+
+	wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
+	pageSizer->Add(listCtrlOnHold, 1, wxALL | wxEXPAND, 0);
+	pagePanel->SetSizerAndFit(pageSizer);
+
+	return pagePanel;
+}
+
+wxPanel* MainFrame::CreateDroppedVisualNovelsPanel(wxNotebook* noteBook)
+{
+	wxPanel* pagePanel = new wxPanel(noteBook, wxID_ANY);
+	listCtrlDropped = new wxDataViewListCtrl(pagePanel, wxID_ANY);
+
+	listCtrlDropped->AppendTextColumn("Visual Novel", wxDATAVIEW_CELL_EDITABLE);
+
+	wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
+	pageSizer->Add(listCtrlDropped, 1, wxALL | wxEXPAND, 0);
+	pagePanel->SetSizerAndFit(pageSizer);
+
+	return pagePanel;
+}
+
+wxPanel* MainFrame::CreatePlanToReadVisualNovelsPanel(wxNotebook* noteBook)
+{
+	wxPanel* pagePanel = new wxPanel(noteBook, wxID_ANY);
+	listCtrlPlanToRead = new wxDataViewListCtrl(pagePanel, wxID_ANY);
+
+	listCtrlPlanToRead->AppendTextColumn("Visual Novel", wxDATAVIEW_CELL_EDITABLE);
+
+	wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
+	pageSizer->Add(listCtrlPlanToRead, 1, wxALL | wxEXPAND, 0);
+	pagePanel->SetSizerAndFit(pageSizer);
+
+	return pagePanel;
+}
+
+wxPanel* MainFrame::CreateCannotReadVisualNovelsPanel(wxNotebook* noteBook)
+{
+	wxPanel* pagePanel = new wxPanel(noteBook, wxID_ANY);
+	listCtrlPlanToReadButCannot = new wxDataViewListCtrl(pagePanel, wxID_ANY);
+
+	listCtrlPlanToReadButCannot->AppendTextColumn("Visual Novel", wxDATAVIEW_CELL_EDITABLE);
+	listCtrlPlanToReadButCannot->AppendTextColumn("Comment", wxDATAVIEW_CELL_EDITABLE);
+
+	wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
+	pageSizer->Add(listCtrlPlanToReadButCannot, 1, wxALL | wxEXPAND, 0);
+	pagePanel->SetSizerAndFit(pageSizer);
+
+	return pagePanel;
+}
+
+void MainFrame::Populate(wxDataViewListCtrl* listCtrl)
+{
+	if (visualNovels.empty()) return;
+
+	listCtrl->DeleteAllItems();
+
+	for (auto& visualNovel : visualNovels)
 	{
-		wxVector<wxVariant> data;
-		data.push_back(wxVariant(visualNovel.name));
-		data.push_back(wxVariant(visualNovel.GetRating()));
-		data.push_back(wxVariant(visualNovel.GetPlaytime()));
-		data.push_back(wxVariant(visualNovel.comment));
-		listCtrl->AppendItem(data);
+		wxVector<wxVariant> defaultValues;
+		defaultValues.push_back(visualNovel.GetName());
+		defaultValues.push_back(visualNovel.GetRating());
+		defaultValues.push_back(visualNovel.GetPlaytime());
+		defaultValues.push_back(visualNovel.GetComment());
+
+		listCtrl->AppendItem(defaultValues);
 	}
 }
