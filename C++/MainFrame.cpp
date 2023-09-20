@@ -314,12 +314,22 @@ void MainFrame::Populate(wxDataViewListCtrl* listCtrl)
 
 	listCtrl->DeleteAllItems();
 
-	for (auto& visualNovel : visualNovels)
+	for (VisualNovel& visualNovel : visualNovels)
 	{
 		wxVector<wxVariant> defaultValues;
+
+		if (listCtrl != this->listCtrlPlanToReadButCannot)
+		{
+			defaultValues.push_back(visualNovel.GetName());
+			defaultValues.push_back(visualNovel.GetRating());
+			defaultValues.push_back(visualNovel.GetPlaytime());
+			defaultValues.push_back(visualNovel.GetComment());
+
+			listCtrl->AppendItem(defaultValues);
+			continue;
+		}
+
 		defaultValues.push_back(visualNovel.GetName());
-		defaultValues.push_back(visualNovel.GetRating());
-		defaultValues.push_back(visualNovel.GetPlaytime());
 		defaultValues.push_back(visualNovel.GetComment());
 
 		listCtrl->AppendItem(defaultValues);

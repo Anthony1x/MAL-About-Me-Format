@@ -22,8 +22,14 @@ struct VisualNovel
 	Status status;
 
 	VisualNovel();
+	
+	// Finished
 	VisualNovel(std::string name, uint8_t rating, uint8_t playtime, std::string comment);
+
+	// Currently reading, On hold, Dropped, Plan to read
 	VisualNovel(std::string name, Status status);
+
+	// Plan to read, but can't
 	VisualNovel(std::string name, std::string comment);
 
 	const wxString GetName() const;
