@@ -94,73 +94,92 @@ void MainFrame::OpenFileDialog(wxCommandEvent& evt)
 
 	VisualNovel::Status status = VisualNovel::Finished;
 
+	uint8_t vnStatus = 0;
+
 	while (!input_stream.Eof())
 	{
-		for (int i = VisualNovel::Finished; i != VisualNovel::Plan_To_Read_But_Cannot; i++)
+		line = text_stream.ReadLine();
+
+		// Line is empty, this means current Visual::Status has been populated.
+		if (line.empty())
 		{
-			line = text_stream.ReadLine();
-
-			// Line is empty, this means current Visual::Status has been populated.
-			if (line.empty())
-			{
-				switch (i)
-				{
-				case VisualNovel::Finished:
-					Populate(listCtrlFinished);
-					break;
-				case VisualNovel::On_Hold:
-					Populate(listCtrlOnHold);
-					break;
-				case VisualNovel::Dropped:
-					Populate(listCtrlDropped);
-					break;
-				case VisualNovel::Plan_To_Read:
-					Populate(listCtrlPlanToRead);
-					break;
-				case VisualNovel::Plan_To_Read_But_Cannot:
-					Populate(listCtrlPlanToReadButCannot);
-					break;
-				}
-			}
-
-			wxArrayString components = wxStringTokenize(line, "\t");
-
-			std::vector<std::string> values(components.begin(), components.end());
-
-			/*
-			 * FUNNY: I swear this is a feature, not a bug.
-			 * VisualNovel objects solely accept `uint32_t`s for construction of hours played and scoring.
-			 * Unfortunately, what save into the file is an entire string with non-number characters.
-			 * We don't pass the value "34" as a string, we pass "34 hours".
-			 * Similarly, we don't pass "7", we pass "7/10" for the rating.
-			 * Fortunately, C++ (or maybe rather MSVC?), being quirky as it is,
-			 * recognizes that the input has non-number characters and simply DISCARDS them.
-			 * So, without having to do anything on our end, "34 hours" is converted to just 34, as an int.
-			 * Take that, sensible developers!
-			 * ...will have to look into how other compilers handle this.
-			 */
-
-			VisualNovel visualNovel;
-
-			switch (i)
+			switch (vnStatus)
 			{
 			case VisualNovel::Finished:
-				visualNovel = VisualNovel(values[0], std::stoi(values[1]), std::stoi(values[2]), values[3]);
+				Populate(listCtrlFinished);
 				break;
 			case VisualNovel::On_Hold:
+				Populate(listCtrlOnHold);
+				break;
 			case VisualNovel::Dropped:
+				Populate(listCtrlDropped);
+				break;
 			case VisualNovel::Plan_To_Read:
-				visualNovel = VisualNovel(values[0], static_cast<VisualNovel::Status>(i));
+				Populate(listCtrlPlanToRead);
 				break;
 			case VisualNovel::Plan_To_Read_But_Cannot:
-				visualNovel = VisualNovel(values[0], values[3]);
+				Populate(listCtrlPlanToReadButCannot);
 				break;
 			}
-
-			this->visualNovels.push_back(visualNovel);
+			vnStatus++;
+			this->visualNovels.clear();
+			
+			continue;
 		}
-	}
 
+		wxArrayString components = wxStringTokenize(line, "\t");
+
+		std::vector<std::string> values(components.begin(), components.end());
+
+		/*
+		 * FUNNY: I swear this is a feature, not a bug.
+		 * VisualNovel objects solely accept `uint32_t`s for construction of hours played and scoring.
+		 * Unfortunately, what save into the file is an entire string with non-number characters.
+		 * We don't pass the value "34" as a string, we pass "34 hours".
+		 * Similarly, we don't pass "7", we pass "7/10" for the rating.
+		 * Fortunately, C++ (or maybe rather MSVC?), being quirky as it is,
+		 * recognizes that the input has non-number characters and simply DISCARDS them.
+		 * So, without having to do anything on our end, "34 hours" is converted to just 34, as an int.
+		 * Take that, sensible developers!
+		 * ...will have to look into how other compilers handle this.
+		 */
+
+		VisualNovel visualNovel = { };
+
+		std::string name;
+		uint8_t rating;
+		uint8_t playtime;
+		std::string comment;
+
+		switch (vnStatus)
+		{
+		case VisualNovel::Finished:
+			name = values[0];
+			rating = std::stoi(values[1]);
+			playtime = std::stoi(values[2]);
+			comment = values[3];
+
+			visualNovel = VisualNovel(name, rating, playtime, comment);
+			break;
+
+		case VisualNovel::On_Hold:
+		case VisualNovel::Dropped:
+		case VisualNovel::Plan_To_Read:
+			name = values[0];
+
+			visualNovel = VisualNovel(name, static_cast<VisualNovel::Status>(vnStatus));
+			break;
+
+		case VisualNovel::Plan_To_Read_But_Cannot:
+			name = values[0];
+			comment = values[1];
+
+			visualNovel = VisualNovel(name, comment);
+			break;
+		}
+
+		this->visualNovels.push_back(visualNovel);
+	}
 }
 
 void MainFrame::SaveFileDialog(wxCommandEvent& evt)
@@ -211,6 +230,8 @@ void MainFrame::VNWriteToFile(wxDataViewListCtrl* listCtrl, wxFileOutputStream& 
 		// Write the row data to the file
 		output_stream.Write(buffer, strlen(buffer));
 	}
+	if (listCtrl != this->listCtrlPlanToReadButCannot)
+		output_stream.Write("\n", strlen("\n"));
 }
 
 wxPanel* MainFrame::CreateFinishedVisualNovelsPanel(wxNotebook* noteBook)
