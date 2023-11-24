@@ -14,13 +14,16 @@ try {
     // TODO: Somehow scrape rating and hours from file
 
     /** @var int[] $x Rating out of 10 */
-    $x = [8, 7, 6, 8, 9, 8, 7, 10, 8, 6, 8, 6, 4, 5, 7];
+    $x = [8, 7, 6, 8, 9, 8, 7, 10, 8, 6, 8, 6, 4, 5, 7, 7, 10];
     /** @var int[] $y Hours played */
-    $y = [34, 32, 28, 42, 54, 78, 32, 50, 61, 9, 47, 24, 2, 23, 16];
+    $y = [34, 32, 28, 42, 54, 78, 32, 50, 61, 9, 47, 24, 2, 23, 16, 46, 41];
+
+    $mean = GetMean(...$x);
+    $hours = array_sum($y);
 
     // Remove all line breaks and tabs, and insert date and line breaks
-    $search =   ["\n",  "\r",   '    ', '[br]', '#{DATE}',      '#{MEAN}',      '#{HOURS}'];
-    $replace =  ['',    '',     '',     "\n",   date('F jS Y'), GetMean(...$x), array_sum($y)];
+    $search =   ["\n",  "\r",   '    ', '[br]', '#{DATE}',      '#{MEAN}',  '#{HOURS}'];
+    $replace =  ['',    '',     '',     "\n",   date('F jS Y'), $mean,      $hours];
     $contents = str_replace($search, $replace, $contents);
 
     // Write formatted file
@@ -29,8 +32,8 @@ try {
     }
 
     echo "Everything worked fine!\n";
-    echo "Mean: ". GetMean(...$x) . "\n";
-    echo "Hours: ". array_sum($y);
+    echo "Mean: $mean\n";
+    echo "Hours: $hours";
 } catch (Exception $e) {
     echo 'Error: ' . $e->getMessage() . "\n";
 }
