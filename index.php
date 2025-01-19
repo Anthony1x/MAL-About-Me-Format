@@ -16,7 +16,7 @@ try {
     $english_stats = get_english_stats();
     $japanese_stats = get_japanese_stats();
 
-    $mean = GetMean(...$english_stats->ratings);
+    $mean = getMean(...$english_stats->ratings);
     $english_hours = array_sum($english_stats->playtime);
     $japanese_hours = array_sum($japanese_stats->playtime);
 
@@ -54,7 +54,7 @@ function get_japanese_stats()
 }
 
 
-function GetMean(int ...$values): float
+function getMean(int ...$values): float
 {
     $x = array_sum($values) / count($values);
     return sprintf('%01.2f', $x);

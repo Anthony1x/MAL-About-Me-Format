@@ -164,7 +164,7 @@ I seperate these entries because I take a lot longer to read them, which would a
         [th]Currently reading[/th]
     [/tr]
     [tr]
-        [td]Nothing[/td]
+        [td]eden* Japanese reread[/td]
     [/tr]
     [tr]
         [th]Next up (in order)[/th]
