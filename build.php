@@ -1,9 +1,18 @@
 <?php
 
+// TODO: Make vn name link to vndb page
+// TODO: Rework URLs, write function that takes two paramters (text, link) that converts into MAL accepted format
+
+// TODO: Classes for english, japanese & upcoming (prolly also helps with appending text to numbers, see todo :49)
+
 function getMean(int ...$values): float
 {
-    $x = array_sum($values) / count($values);
-    return sprintf('%01.2f', $x);
+    return sprintf('%01.2f', array_sum($values) / count($values));
+}
+
+function url(string $text, string $url): string
+{
+    return "[url=$url]{$text}[/url]";
 }
 
 class VisualNovelBuilder
@@ -34,6 +43,11 @@ class VisualNovelBuilder
         $this->br();
 
         $this->buildUpcoming();
+
+        // Write formatted file
+        if (file_put_contents('VisualNovelList-FORMATTED2.md', $this->output) === false) {
+            throw new Exception('Failed to write to destination file!');
+        }
     }
 
     private function buildEnglishTable(): void
@@ -156,7 +170,7 @@ class VisualNovelBuilder
         $this->output .= "[tr]";
 
         foreach ($entries as $entry) {
-            $this->output .= "[$kind]$entry" . '[/' . "$kind]";
+            $this->output .= "[{$kind}]{$entry}[/{$kind}]";
         }
 
         $this->output .= '[/tr]';
@@ -173,48 +187,54 @@ class VisualNovelBuilder
     }
 }
 
+class VN {}
+
+class EnglishVN extends VN {}
+
+class JapaneseVN extends VN {}
+
 $english = [
     [
         'name' => "Steins;Gate",
         'rating' => 8,
         'hours' => 34,
-        'comment' => "PATCH USED: [url=https://sonome.dareno.me/projects/sghd.html]Committee of Zero Improvement Patch[/url]"
+        'comment' => "PATCH USED: " . url('Committee of Zero Improvement Patch', 'https://sonome.dareno.me/projects/sghd.html')
     ],
     [
         'name' => "Steins;Gate 0",
         'rating' => 7,
         'hours' => 32,
-        'comment' => "PATCH USED: [url=https://sonome.dareno.me/projects/sg0-steam.html]Committee of Zero Improvement Patch[/url]",
+        'comment' => "PATCH USED: " . url('Committee of Zero Improvement Patch', 'https://sonome.dareno.me/projects/sg0-steam.html'),
     ],
     [
         'name' => "Chaos;Head",
         'rating' => 6,
         'hours' => 28,
-        'comment' => "PATCH USED: [url=https://nipkownix.github.io/ChaoticHead]Chaotic;Head Patch[/url]",
+        'comment' => "PATCH USED: " . url('Chaotic;Head Patch', 'https://nipkownix.github.io/ChaoticHead')
     ],
     [
         'name' => "Robotics;Notes ELITE",
         'rating' => 8,
         'hours' => 42,
-        'comment' => "PATCH USED: [url=https://sonome.dareno.me/projects/rne-steam.html]Committee of Zero Improvement Patch[/url]"
+        'comment' => "PATCH USED: " . url('Committee of Zero Improvement Patch', 'https://sonome.dareno.me/projects/rne-steam.html'),
     ],
     [
         'name' => "Chaos;Child",
         'rating' => 9,
         'hours' => 54,
-        'comment' => "PATCH USED: [url=https://sonome.dareno.me/projects/chaoschild-steam.html]Committee of Zero Improvement Patch[/url]",
+        'comment' => "PATCH USED: " . url('Committee of Zero Improvement Patch', 'https://sonome.dareno.me/projects/chaoschild-steam.html'),
     ],
     [
         'name' => "Fate/Stay Night (Realta Nua)",
         'rating' => 8,
         'hours' => 78,
-        'comment' => "PATCH USED: [url=https://forums.nrvnqsr.com/showthread.php/9101-Fate-Stay-Night-Realta-Nua-Ultimate-Edition-2022]Ultimate Edition Patch[/url]",
+        'comment' => "PATCH USED: " . url('Ultimate Edition Patch', 'https://forums.nrvnqsr.com/showthread.php/9101-Fate-Stay-Night-Realta-Nua-Ultimate-Edition-2022')
     ],
     [
         'name' => "Fate/Hollow Ataraxia",
         'rating' => 7,
         'hours' => 32,
-        'comment' => "PATCH USED: [url=https://forums.nrvnqsr.com/showthread.php/7705-Fate-Hollow-Ataraxia-Voice-Patch]Voice Patch[/url]",
+        'comment' => "PATCH USED: " . url('Voice Patch', 'https://forums.nrvnqsr.com/showthread.php/7705-Fate-Hollow-Ataraxia-Voice-Patch')
     ],
     [
         'name' => "Wonderful Everyday Down the Rabbit-Hole",
@@ -234,7 +254,6 @@ $english = [
         'hours' => 9,
         'comment' => "18+ DLC not available in Germany (LOL)",
     ],
-
     [
         'name' => "Chaos;Head Noah",
         'rating' => 8,
@@ -257,8 +276,7 @@ $english = [
         'name' => "Robotics;Notes DaSH",
         'rating' => 5,
         'hours' => 23,
-        'comment' => "PATCH USED: [url=http://sonome.dareno.me/projects/rnd-steam.html]Committee of Zero Improvement Patch[/url]",
-
+        'comment' => "PATCH USED: " . url('Committee of Zero Improvement Patch', 'http://sonome.dareno.me/projects/rnd-steam.html')
     ],
     [
         'name' => "Anonymous;Code",
@@ -270,19 +288,19 @@ $english = [
         'name' => "Muv-Luv",
         'rating' => 7,
         'hours' => 46,
-        'comment' => "PATCH USED: [url=https://drive.google.com/file/d/1IE1I9xAQlmFKcTay-cZhCiyRAoYgiXqy]Muv-Luv Director's Cut Patch[/url]",
+        'comment' => "PATCH USED: " . url("Muv-Luv Director's Cut Patch", 'https://drive.google.com/file/d/1IE1I9xAQlmFKcTay-cZhCiyRAoYgiXqy')
     ],
     [
         'name' => "Muv-Luv Alternative",
         'rating' => 10,
         'hours' => 41,
-        'comment' => "PATCH USED: [url=https://drive.google.com/file/d/1VbSge69gXCi6Nn0R-bN7Uw0wNUEkXVk9]Muv-Luv Alternative Director's Cut Patch[/url]",
+        'comment' => "PATCH USED: " . url("Muv-Luv Alternative Director's Cut Patch", 'https://drive.google.com/file/d/1VbSge69gXCi6Nn0R-bN7Uw0wNUEkXVk9')
     ],
     [
         'name' => "Tsukihime",
         'rating' => 6,
         'hours' => 34,
-        'comment' => "Read on [url=https://tsukiweb.holofield.fr]Tsukiweb[/url]",
+        'comment' => "Read on " . url('Tsukiweb', 'https://tsukiweb.holofield.fr'),
     ],
     [
         'name' => "Vampires' Melody",
@@ -302,13 +320,18 @@ $japanese = [
     [
         'name' => '月影のシミュラクル',
         'hours' => 84,
-        'comment' => '[url=https://vndb.org/r64111]High Level Complete Set Edition[/url]',
-    ]
+        'comment' => url('High Level Complete Set Edition', 'https://vndb.org/r64111'),
+    ],
+    [
+        'name' => 'eden*',
+        'hours' => 33,
+        'comment' => 'None',
+    ],
 ];
 
 $upcoming = [
     'Currently reading' => [],
-    'Next up (in order)' => ['eden* Japanese reread'],
+    'Next up (in order)' => [],
     'On hold / Restart' => ['WITCH ON THE HOLY NIGHT (burnt out)'],
     'Dropped' => ['DeadΩAegis'],
     'Plan to read' => [
