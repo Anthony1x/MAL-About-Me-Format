@@ -50,7 +50,7 @@ function get_english_stats()
 
 function get_japanese_stats()
 {
-    return new VisualNovel(null, [84, 33]);
+    return new VisualNovel(null, [84, 33, 102, 16]);
 }
 
 
