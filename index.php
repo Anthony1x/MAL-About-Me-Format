@@ -40,7 +40,7 @@ try {
 }
 
 
-function get_english_stats()
+function get_english_stats(): VisualNovel
 {
     return new VisualNovel(
         [8, 7, 6, 8, 9, 8, 7, 10, 8, 6, 8, 6, 3, 5, 7, 7, 10, 6, 5, 6],
@@ -48,9 +48,9 @@ function get_english_stats()
     );
 }
 
-function get_japanese_stats()
+function get_japanese_stats(): VisualNovel
 {
-    return new VisualNovel(null, [84, 33, 102, 16]);
+    return new VisualNovel(null, [84, 36, 97, 16, 160, 31, 41]);
 }
 
 
