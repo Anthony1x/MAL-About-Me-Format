@@ -159,7 +159,7 @@
         }
     ],
     "currently_reading": [
-        "None... for now"
+        "ましろ色シンフォニー"
     ],
     "next_up": [
         "None"
@@ -168,13 +168,14 @@
         "WITCH ON THE HOLY NIGHT (burnt out)"
     ],
     "dropped": [
-        "DeadΩAegis"
+        "DeadΩAegis",
+        "真愛の百合は赤く染まる"
     ],
     "plan_to_read": [
-        "The Great Ace Attorney Chronicles",
+        "Apollo Justice: Ace Attorney Trilogy",
         "Danganronpa 1",
         "Chaos;Head Love Chu Chu!",
-        "Apollo Justice: Ace Attorney Trilogy",
+        "The Great Ace Attorney Chronicles",
         "Danganronpa 2",
         "Chaos;Child Love Chu Chu!!",
         "White Album",
@@ -193,15 +194,22 @@
         "Kara no Shojo",
         "Wagamama High Spec",
         "君が望む永遠",
-        "True Love's Lily Dyes Red",
+        "Until then",
         "サクラノ詩",
         "君がいた季節",
         "G線上の魔王",
-        "サクラノ刻"
+        "サクラノ刻",
+        "Famicom Detective Club",
+        "俺たちに翼はない",
+        "Lackgirl",
+        "fortissimo EXS//Akkord:nächsten Phase",
+        "Kanon"
     ],
     "unreleased": [
         "Steins;Gate RE:BOOT",
         "Steins;??? (thematic sequel)",
-        "Muv-Luv Integrate"
+        "Muv-Luv Integrate",
+        "魔法少女ノ因習村",
+        "配信少女ノ裏垢迷宮"
     ]
 }

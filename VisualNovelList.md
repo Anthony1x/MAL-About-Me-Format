@@ -39,7 +39,6 @@ I seperate these entries because I take a lot longer to read them, which would a
 [/table]
 
 [br]
-[br]
 
 [table]
     [tr]
@@ -56,6 +55,8 @@ I seperate these entries because I take a lot longer to read them, which would a
 #{ON_HOLD_ROWS}
     [tr]
         [th]Dropped[/th]
+        [th][/th]
+        [th][/th]
     [/tr]
 #{DROPPED_ROWS}
     [tr]
@@ -71,4 +72,3 @@ I seperate these entries because I take a lot longer to read them, which would a
     [/tr]
 #{UNRELEASED_ROWS}
 [/table]
-²
