@@ -38,8 +38,10 @@ I seperate these entries because I take a lot longer to read them, which would a
     [/tr]
 [/table]
 
-[br]
+TOTAL GAMES: #{TOTAL_COUNT}[br]
+TOTAL PLAY TIME: #{TOTAL_HOURS} hours[br]
 
+[br]
 [table]
     [tr]
         [th]Currently reading[/th]

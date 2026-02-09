@@ -48,6 +48,9 @@ foreach ($data['japanese'] as $vn) {
 
 $japanese_count = count($data['japanese']);
 
+$total_count = $english_count + $japanese_count;
+$total_hours = $english_hours + $japanese_hours;
+
 
 /* Simple single-row lists */
 function simple_rows($arr)
@@ -96,6 +99,8 @@ $search = [
     '#{JAPANESE_HOURS}',
     '#{ENGLISH_COUNT}',
     '#{JAPANESE_COUNT}',
+    '#{TOTAL_COUNT}',
+    '#{TOTAL_HOURS}',
     '#{CURRENTLY_READING_ROWS}',
     '#{NEXT_UP_ROWS}',
     '#{ON_HOLD_ROWS}',
@@ -117,6 +122,8 @@ $replace = [
     $japanese_hours,
     $english_count,
     $japanese_count,
+    $total_count,
+    $total_hours,
     $currently_reading_rows,
     $next_up_rows,
     $on_hold_rows,

@@ -156,10 +156,20 @@
             "title": "魔法少女ノ魔女裁判",
             "hours": 41,
             "comment": "None"
+        },
+        {
+            "title": "存在/しないあなた、と私",
+            "hours": 5.33,
+            "comment": "None"
+        },
+        {
+            "title": "君と彼女と彼女の恋。",
+            "hours": 21,
+            "comment": "通常版"
         }
     ],
     "currently_reading": [
-        "存在/しないあなた、と私"
+        "ましろ色シンフォニー"
     ],
     "next_up": [
         "None"
@@ -169,8 +179,7 @@
     ],
     "dropped": [
         "DeadΩAegis",
-        "真愛の百合は赤く染まる",
-        "ましろ色シンフォニー"
+        "真愛の百合は赤く染まる"
     ],
     "plan_to_read": [
         "Apollo Justice: Ace Attorney Trilogy",
@@ -191,7 +200,7 @@
         "Higurashi: When They Cry",
         "BALDR SKY",
         "The Fruit of Grisaia",
-        "Umineko: When they cry",
+        "Umineko: When They Cry",
         "Kara no Shojo",
         "Wagamama High Spec",
         "君が望む永遠",
@@ -204,7 +213,8 @@
         "俺たちに翼はない",
         "Lackgirl",
         "fortissimo EXS//Akkord:nächsten Phase",
-        "Kanon"
+        "Kanon",
+        "Figu@mate"
     ],
     "unreleased": [
         "Steins;Gate RE:BOOT",
