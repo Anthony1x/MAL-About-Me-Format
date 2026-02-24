@@ -1,7 +1,9 @@
-Since MyAnimeList does not support visual novels I will score them here.
-[br]
-LAST UPDATED: #{DATE}
-[br]
+Since MyAnimeList does not support visual novels I will score them here.[br]
+
+Data is imported via [url=https://github.com/Anthony1x/MAL-About-Me-Format]a script[/url]
+ from my [url=https://vndb.org/u253466/ulist?vnlist=1]vndb list[/url][br][br]
+
+LAST UPDATED: #{DATE}[br]
 
 [table]
     [tr]
